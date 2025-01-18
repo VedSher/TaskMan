@@ -41,7 +41,7 @@ function TaskItem({ task }: TaskItemProps) {
           {task.priority}
         </p>
         <div>
-          <div className="flex items-center gap-3 text-gray-400 text-[1.2rem]">
+          <div className="flex items-center gap-3 text-gray-400 text-[1.5rem]">
             <button
               className={`${
                 task.completed ? "text-yellow-400" : "text-gray-400"

@@ -21,6 +21,7 @@
     "react-dom": "^18",
     "react-gtm-module": "^2.0.11",
     "react-hot-toast": "^2.4.1",
+    "react-toastify": "^11.0.3",
     "recharts": "^2.15.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"

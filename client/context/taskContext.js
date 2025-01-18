@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 
 const TasksContext = createContext();
 
-const serverUrl = "https://taskfyer.onrender.com/api/v1";
+const serverUrl = "http://localhost:8000/api/v1";
 
 export const TasksProvider = ({ children }) => {
   const userId = useUserContext().user._id;
@@ -44,76 +44,95 @@ export const TasksProvider = ({ children }) => {
     setTask({});
   };
 
-  // get tasks
+  const handleError = (error, defaultMessage) => {
+    if (error.response) {
+      const { status, data } = error.response;
+
+      if (status === 400) {
+        toast.error(data.message || "Invalid request. Please try again.");
+      } else if (status === 404) {
+        toast.error("Resource not found. Please check the URL.");
+      } else {
+        toast.error("An error occurred. Please try again later.");
+      }
+    } else if (error.request) {
+      toast.error("No response from the server. Please check your network.");
+    } else {
+      toast.error(defaultMessage);
+    }
+    console.error(defaultMessage, error);
+  };
+
+  // Get all tasks
   const getTasks = async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${serverUrl}/tasks`);
-
       setTasks(response.data.tasks);
     } catch (error) {
-      console.log("Error getting tasks", error);
+      handleError(error, "Error getting tasks");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  // get task
+  // Get a single task
   const getTask = async (taskId) => {
     setLoading(true);
     try {
       const response = await axios.get(`${serverUrl}/task/${taskId}`);
-
       setTask(response.data);
     } catch (error) {
-      console.log("Error getting task", error);
+      handleError(error, "Error getting task");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
+  // Create a task
   const createTask = async (task) => {
     setLoading(true);
     try {
       const res = await axios.post(`${serverUrl}/task/create`, task);
-
-      console.log("Task created", res.data);
-
       setTasks([...tasks, res.data]);
-      toast.success("Task created successfully");
+      toast.success("Task created successfully!");
     } catch (error) {
-      console.log("Error creating task", error);
+      handleError(error, "Error creating task");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
+  // Update a task
   const updateTask = async (task) => {
     setLoading(true);
     try {
       const res = await axios.patch(`${serverUrl}/task/${task._id}`, task);
-
-      // update the task in the tasks array
-      const newTasks = tasks.map((tsk) => {
-        return tsk._id === res.data._id ? res.data : tsk;
-      });
-
-      toast.success("Task updated successfully");
-
+      const newTasks = tasks.map((tsk) =>
+        tsk._id === res.data._id ? res.data : tsk
+      );
       setTasks(newTasks);
+      toast.success("Task updated successfully!");
     } catch (error) {
-      console.log("Error updating task", error);
+      handleError(error, "Error updating task");
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Delete a task
   const deleteTask = async (taskId) => {
     setLoading(true);
     try {
-      await axios.delete(`${serverUrl}/task/${taskId}`);
-
       // remove the task from the tasks array
+      await axios.delete(`${serverUrl}/task/${taskId}`);
       const newTasks = tasks.filter((tsk) => tsk._id !== taskId);
-
       setTasks(newTasks);
+      toast.success("Task deleted successfully!");
     } catch (error) {
-      console.log("Error deleting task", error);
+      handleError(error, "Error deleting task");
+    } finally {
+      setLoading(false);
     }
   };
 

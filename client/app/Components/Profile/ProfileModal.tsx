@@ -156,6 +156,7 @@ function ProfileModal() {
 
           <div className="flex justify-end gap-4 border-t-2 border-t-[#323232]/10">
             <button
+              onClick={closeModal}
               className="mt-3 py-2 px-4 bg-transparent text-black text-sm font-medium rounded-md border-2 border-[#323232]/10
                 hover:bg-[#EB4E31] hover:border-transparent hover:text-white transition-all duration-300"
             >
